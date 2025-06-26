@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ยืนยันการเปลี่ยน Password</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .header p {
+            color: #666;
+            margin: 10px 0 0 0;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .checkbox-group {
+            margin: 15px 0;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        
+        .checkbox-item:hover {
+            background-color: #f8f9ff;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            accent-color: #667eea;
+        }
+        
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .main-checkbox {
+            background-color: #e8f2ff;
+            border: 2px solid #667eea;
+        }
+        
+        .system-checkboxes {
+            margin-left: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .summary {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+            display: none;
+        }
+        
+        .summary h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+        
+        .summary-item {
+            margin: 8px 0;
+            padding: 5px 0;
+        }
+        
+        .summary-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .summary-value {
+            color: #333;
+            margin-left: 10px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+        
+        .success-icon {
+            font-size: 60px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Form Section -->
+        <div id="formSection">
+            <div class="header">
+                <h1>🔐 ยืนยันการเปลี่ยน Password</h1>
+                <p>กรุณากรอกข้อมูลเพื่อยืนยันการดำเนินการ</p>
+            </div>
+            
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label for="userName">ชื่อ-นามสกุล *</label>
+                    <input type="text" id="userName" required placeholder="กรุณากรอกชื่อ-นามสกุล">
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <div class="checkbox-item main-checkbox">
+                            <input type="checkbox" id="passwordChanged" required>
+                            <label for="passwordChanged">✅ ได้ดำเนินการเปลี่ยน Password แล้ว</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>ระบบที่ดำเนินการเปลี่ยน Password:</label>
+                    <div class="system-checkboxes">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system1" name="systems">
+                            <label for="system1">🖥️ ระบบที่ 1 - Windows Domain</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system2" name="systems">
+                            <label for="system2">📧 ระบบที่ 2 - Email System</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system3" name="systems">
+                            <label for="system3">📊 ระบบที่ 3 - ERP System</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="system4" name="systems">
+                            <label for="system4">☁️ ระบบที่ 4 - Cloud Services</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="error-message" id="errorMessage"></div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" id="previewBtn">👁️ ดูข้อมูลสรุป</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Summary Section -->
+        <div id="summarySection" class="summary">
+            <h3>📋 สรุปข้อมูลที่กรอก</h3>
+            <div class="summary-item">
+                <span class="summary-label">ชื่อ:</span>
+                <span class="summary-value" id="summaryName"></span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">สถานะ:</span>
+                <span class="summary-value" id="summaryStatus"></span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">ระบบที่เปลี่ยน Password:</span>
+                <div class="summary-value" id="summarySystems"></div>
+            </div>
+            
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" id="backBtn">⬅️ กลับไปแก้ไข</button>
+                <button type="button" class="btn btn-success" id="submitBtn">✅ ยืนยันและส่งข้อมูล</button>
+            </div>
+        </div>
+        
+        <!-- Loading Section -->
+        <div id="loadingSection" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>กำลังบันทึกข้อมูล...</p>
+        </div>
+        
+        <!-- Success Section -->
+        <div id="successSection" class="success-message">
+            <div class="success-icon">✅</div>
+            <h2>บันทึกข้อมูลสำเร็จ!</h2>
+            <p>ขอบคุณที่ยืนยันการเปลี่ยน Password</p>
+            <button type="button" class="btn btn-primary" onclick="liff.closeWindow()">ปิดหน้าต่าง</button>
+        </div>
+    </div>
+
+    <script>
+        // Google Apps Script URL - ต้องแทนที่ด้วย URL จริง
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbx7JPMUZe_PLFjDCVUJEthXP2XgoiVAsmcKPj6Jpazzw6iYLhQA2o5z0Yr7CX0MMXhS/exec';
+        
+        let userProfile = null;
+        
+        // Initialize LIFF
+        document.addEventListener('DOMContentLoaded', function() {
+            liff.init({
+                liffId: '2007646136-9Y4G73l4' // ต้องแทนที่ด้วย LIFF ID จริง
+            }).then(() => {
+                if (liff.isLoggedIn()) {
+                    return liff.getProfile();
+                } else {
+                    liff.login();
+                }
+            }).then(profile => {
+                if (profile) {
+                    userProfile = profile;
+                    console.log('User profile:', profile);
+                }
+            }).catch(err => {
+                console.error('LIFF initialization failed', err);
+                showError('ไม่สามารถเชื่อมต่อกับ LINE ได้');
+            });
+        });
+        
+        // Form elements
+        const formSection = document.getElementById('formSection');
+        const summarySection = document.getElementById('summarySection');
+        const loadingSection = document.getElementById('loadingSection');
+        const successSection = document.getElementById('successSection');
+        const previewBtn = document.getElementById('previewBtn');
+        const backBtn = document.getElementById('backBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Event listeners
+        previewBtn.addEventListener('click', showSummary);
+        backBtn.addEventListener('click', showForm);
+        submitBtn.addEventListener('click', submitForm);
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+        
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+        
+        function validateForm() {
+            const userName = document.getElementById('userName').value.trim();
+            const passwordChanged = document.getElementById('passwordChanged').checked;
+            const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
+            
+            if (!userName) {
+                showError('กรุณากรอกชื่อ-นามสกุล');
+                return false;
+            }
+            
+            if (!passwordChanged) {
+                showError('กรุณายืนยันว่าได้ดำเนินการเปลี่ยน Password แล้ว');
+                return false;
+            }
+            
+            if (systemCheckboxes.length === 0) {
+                showError('กรุณาเลือกระบบที่ได้ดำเนินการเปลี่ยน Password อย่างน้อย 1 ระบบ');
+                return false;
+            }
+            
+            hideError();
+            return true;
+        }
+        
+        function showSummary() {
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Get form data
+            const userName = document.getElementById('userName').value.trim();
+            const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
+            
+            // Update summary
+            document.getElementById('summaryName').textContent = userName;
+            document.getElementById('summaryStatus').textContent = '✅ ได้ดำเนินการเปลี่ยน Password แล้ว';
+            
+            const systemsHtml = Array.from(systemCheckboxes).map(checkbox => {
+                return '<div style="margin: 5px 0;">• ' + checkbox.nextElementSibling.textContent + '</div>';
+            }).join('');
+            document.getElementById('summarySystems').innerHTML = systemsHtml;
+            
+            // Show summary section
+            formSection.style.display = 'none';
+            summarySection.style.display = 'block';
+        }
+        
+        function showForm() {
+            summarySection.style.display = 'none';
+            formSection.style.display = 'block';
+        }
+        
+        function submitForm() {
+            if (!userProfile) {
+                showError('ไม่สามารถดึงข้อมูลผู้ใช้จาก LINE ได้');
+                return;
+            }
+            
+            // Show loading
+            summarySection.style.display = 'none';
+            loadingSection.style.display = 'block';
+            
+            // Prepare data
+            const userName = document.getElementById('userName').value.trim();
+            const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
+            
+            const formData = {
+                timestamp: new Date().toLocaleString('th-TH'),
+                lineUserId: userProfile.userId,
+                lineDisplayName: userProfile.displayName,
+                userName: userName,
+                passwordChanged: true,
+                system1: document.getElementById('system1').checked,
+                system2: document.getElementById('system2').checked,
+                system3: document.getElementById('system3').checked,
+                system4: document.getElementById('system4').checked,
+                systemsCount: systemCheckboxes.length
+            };
+            
+            // Submit to Google Apps Script
+            fetch(GAS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadingSection.style.display = 'none';
+                    successSection.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loadingSection.style.display = 'none';
+                summarySection.style.display = 'block';
+                showError('เกิดข้อผิดพลาด: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
