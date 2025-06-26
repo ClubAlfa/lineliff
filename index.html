@@ -325,30 +325,76 @@
 
     <script>
         // Google Apps Script URL - ต้องแทนที่ด้วย URL จริง
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzS_iDqOIrTwKGzqUYDTiZNwiEPgAhCM4LXBfLMCZD01ulfXv3GcGn_P1EzKyZsB8Jk/exec';
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbxXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/exec';
         
         let userProfile = null;
+        let isInLineApp = false;
+        
+        // ตรวจสอบว่าอยู่ใน LINE หรือไม่
+        function checkIfInLine() {
+            const userAgent = navigator.userAgent;
+            return userAgent.includes('Line/') || userAgent.includes('LINE/');
+        }
         
         // Initialize LIFF
         document.addEventListener('DOMContentLoaded', function() {
-            liff.init({
-                liffId: '2007646136-9Y4G73l4' // ต้องแทนที่ด้วย LIFF ID จริง
-            }).then(() => {
-                if (liff.isLoggedIn()) {
-                    return liff.getProfile();
-                } else {
-                    liff.login();
-                }
-            }).then(profile => {
-                if (profile) {
-                    userProfile = profile;
-                    console.log('User profile:', profile);
-                }
-            }).catch(err => {
-                console.error('LIFF initialization failed', err);
-                showError('ไม่สามารถเชื่อมต่อกับ LINE ได้');
-            });
+            isInLineApp = checkIfInLine();
+            
+            if (isInLineApp && typeof liff !== 'undefined') {
+                // อยู่ใน LINE App
+                liff.init({
+                    liffId: '2005926616-YOUR_LIFF_ID' // ต้องแทนที่ด้วย LIFF ID จริง
+                }).then(() => {
+                    if (liff.isLoggedIn()) {
+                        return liff.getProfile();
+                    } else {
+                        liff.login();
+                    }
+                }).then(profile => {
+                    if (profile) {
+                        userProfile = profile;
+                        console.log('User profile:', profile);
+                        showUserInfo(profile);
+                    }
+                }).catch(err => {
+                    console.error('LIFF initialization failed', err);
+                    showError('ไม่สามารถเชื่อมต่อกับ LINE ได้');
+                });
+            } else {
+                // อยู่ในเบราว์เซอร์ธรรมดา (สำหรับทดสอบ)
+                console.log('Running in browser (test mode)');
+                userProfile = {
+                    userId: 'test-user-browser',
+                    displayName: 'Test User (Browser)',
+                    pictureUrl: ''
+                };
+                showUserInfo(userProfile);
+                showTestModeWarning();
+            }
         });
+        
+        function showUserInfo(profile) {
+            if (profile && profile.displayName) {
+                const header = document.querySelector('.header p');
+                header.textContent = `สวัสดี ${profile.displayName} กรุณากรอกข้อมูลเพื่อยืนยันการดำเนินการ`;
+            }
+        }
+        
+        function showTestModeWarning() {
+            const warning = document.createElement('div');
+            warning.style.cssText = `
+                background: #fff3cd;
+                border: 1px solid #ffeaa7;
+                color: #856404;
+                padding: 10px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+                text-align: center;
+                font-size: 14px;
+            `;
+            warning.innerHTML = '⚠️ <strong>โหมดทดสอบ:</strong> กรุณาเปิดใน LINE เพื่อใช้งานจริง';
+            document.querySelector('.container').insertBefore(warning, document.querySelector('.header'));
+        }
         
         // Form elements
         const formSection = document.getElementById('formSection');
@@ -428,7 +474,7 @@
         
         function submitForm() {
             if (!userProfile) {
-                showError('ไม่สามารถดึงข้อมูลผู้ใช้จาก LINE ได้');
+                showError('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
                 return;
             }
             
@@ -441,7 +487,7 @@
             const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
             
             const formData = {
-                timestamp: new Date().toLocaleString('th-TH'),
+                timestamp: new Date().toLocaleString('th-TH', {timeZone: 'Asia/Bangkok'}),
                 lineUserId: userProfile.userId,
                 lineDisplayName: userProfile.displayName,
                 userName: userName,
@@ -453,29 +499,47 @@
                 systemsCount: systemCheckboxes.length
             };
             
-            // Submit to Google Apps Script
-            fetch(GAS_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    loadingSection.style.display = 'none';
-                    successSection.style.display = 'block';
-                } else {
-                    throw new Error(data.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                loadingSection.style.display = 'none';
-                summarySection.style.display = 'block';
-                showError('เกิดข้อผิดพลาด: ' + error.message);
+            console.log('Sending data:', formData);
+            
+            // วิธีที่ 1: ใช้ form submit (หลีกเลี่ยง CORS)
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = GAS_URL;
+            form.target = '_blank';
+            form.style.display = 'none';
+            
+            // สร้าง input fields
+            Object.keys(formData).forEach(key => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = formData[key];
+                form.appendChild(input);
             });
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+            
+            // แสดงผลสำเร็จทันที (เพราะไม่สามารถรอ response ได้)
+            setTimeout(() => {
+                loadingSection.style.display = 'none';
+                successSection.style.display = 'block';
+            }, 2000);
+            
+            // วิธีที่ 2: ลองใช้ fetch พร้อม fallback (สำรอง)
+            setTimeout(() => {
+                fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData),
+                    mode: 'no-cors'
+                }).catch(error => {
+                    console.log('Fetch error (expected in no-cors mode):', error);
+                });
+            }, 1000);
         }
     </script>
 </body>
