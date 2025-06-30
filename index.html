@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ยืนยันการเปลี่ยน Password</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3/dist/js.cookie.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -325,58 +326,137 @@
 
     <script>
         // Google Apps Script URL - ต้องแทนที่ด้วย URL จริง
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyIcjD-TJKrv5Whj9a9g-RWTL8CGSmheKUvJ3vF7VsEScwGcvNUqNlE3qh5MTKYmmc/exec';
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyDd41WufoVzFreCjDGWxshG_EjsOYckZO-zMrcH_DjPKcKYGSa34mV4FDDplqnxVI/exec';
         
         let userProfile = null;
         let isInLineApp = false;
+        let liffReady = false;
+        
+        // เพิ่มข้อมูล debug
+        function debugLog(message, data = null) {
+            console.log(`[DEBUG] ${message}`, data || '');
+            
+            // แสดงข้อมูล debug บนหน้าจอ (ถ้าต้องการ)
+            const debugDiv = document.getElementById('debugInfo') || createDebugDiv();
+            debugDiv.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            if (data) {
+                debugDiv.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+        }
+        
+        function createDebugDiv() {
+            const div = document.createElement('div');
+            div.id = 'debugInfo';
+            div.style.cssText = `
+                position: fixed; bottom: 0; left: 0; right: 0; 
+                background: rgba(0,0,0,0.8); color: white; 
+                padding: 10px; font-size: 12px; max-height: 200px; 
+                overflow-y: auto; z-index: 9999; display: none;
+            `;
+            document.body.appendChild(div);
+            
+            // เพิ่มปุ่มสำหรับแสดง/ซ่อน debug
+            const toggleBtn = document.createElement('button');
+            toggleBtn.textContent = '🐛';
+            toggleBtn.style.cssText = `
+                position: fixed; bottom: 210px; right: 10px; 
+                z-index: 10000; padding: 5px 10px; border: none; 
+                background: #333; color: white; border-radius: 50%;
+            `;
+            toggleBtn.onclick = () => {
+                div.style.display = div.style.display === 'none' ? 'block' : 'none';
+            };
+            document.body.appendChild(toggleBtn);
+            
+            return div;
+        }
         
         // ตรวจสอบว่าอยู่ใน LINE หรือไม่
         function checkIfInLine() {
             const userAgent = navigator.userAgent;
-            return userAgent.includes('Line/') || userAgent.includes('LINE/');
+            const isLine = userAgent.includes('Line/') || userAgent.includes('LINE/') || 
+                          userAgent.includes('LIFF/') || window.liff !== undefined;
+            debugLog('User Agent Check', {userAgent, isLine});
+            return isLine;
         }
         
         // Initialize LIFF
         document.addEventListener('DOMContentLoaded', function() {
-            isInLineApp = checkIfInLine();
+            debugLog('DOM Content Loaded');
             
-            if (isInLineApp && typeof liff !== 'undefined') {
-                // อยู่ใน LINE App
-                liff.init({
-                    liffId: '2007646136-9Y4G73l4' // ต้องแทนที่ด้วย LIFF ID จริง
-                }).then(() => {
-                    if (liff.isLoggedIn()) {
-                        return liff.getProfile();
-                    } else {
-                        liff.login();
+            isInLineApp = checkIfInLine();
+            debugLog('Is in LINE App', isInLineApp);
+            
+            // รอให้ LIFF SDK โหลดเสร็จ
+            if (typeof liff === 'undefined') {
+                debugLog('LIFF SDK not loaded, waiting...');
+                let attempts = 0;
+                const checkLiff = setInterval(() => {
+                    attempts++;
+                    if (typeof liff !== 'undefined') {
+                        debugLog('LIFF SDK loaded after attempts', attempts);
+                        clearInterval(checkLiff);
+                        initializeLiff();
+                    } else if (attempts > 20) {
+                        debugLog('LIFF SDK failed to load after 20 attempts');
+                        clearInterval(checkLiff);
+                        initializeFallback();
                     }
-                }).then(profile => {
-                    if (profile) {
-                        userProfile = profile;
-                        console.log('User profile:', profile);
-                        showUserInfo(profile);
-                    }
-                }).catch(err => {
-                    console.error('LIFF initialization failed', err);
-                    showError('ไม่สามารถเชื่อมต่อกับ LINE ได้');
-                });
+                }, 500);
             } else {
-                // อยู่ในเบราว์เซอร์ธรรมดา (สำหรับทดสอบ)
-                console.log('Running in browser (test mode)');
-                userProfile = {
-                    userId: 'test-user-browser',
-                    displayName: 'Test User (Browser)',
-                    pictureUrl: ''
-                };
-                showUserInfo(userProfile);
-                showTestModeWarning();
+                debugLog('LIFF SDK already loaded');
+                initializeLiff();
             }
         });
+        
+        function initializeLiff() {
+            const LIFF_ID = '2007646136-9Y4G73l4'; // แทนที่ด้วย LIFF ID จริง
+            debugLog('Initializing LIFF with ID', LIFF_ID);
+            
+            liff.init({
+                liffId: LIFF_ID
+            }).then(() => {
+                debugLog('LIFF initialized successfully');
+                liffReady = true;
+                
+                if (liff.isLoggedIn()) {
+                    debugLog('User is logged in');
+                    return liff.getProfile();
+                } else {
+                    debugLog('User not logged in, redirecting to login');
+                    liff.login();
+                }
+            }).then(profile => {
+                if (profile) {
+                    userProfile = profile;
+                    debugLog('Got user profile', profile);
+                    showUserInfo(profile);
+                    isInLineApp = true;
+                }
+            }).catch(err => {
+                debugLog('LIFF initialization failed', err);
+                console.error('LIFF initialization failed', err);
+                initializeFallback();
+            });
+        }
+        
+        function initializeFallback() {
+            debugLog('Using fallback mode (browser test)');
+            userProfile = {
+                userId: 'test-user-' + Date.now(),
+                displayName: 'Test User (Browser)',
+                pictureUrl: ''
+            };
+            showUserInfo(userProfile);
+            showTestModeWarning();
+            isInLineApp = false;
+        }
         
         function showUserInfo(profile) {
             if (profile && profile.displayName) {
                 const header = document.querySelector('.header p');
                 header.textContent = `สวัสดี ${profile.displayName} กรุณากรอกข้อมูลเพื่อยืนยันการดำเนินการ`;
+                debugLog('Updated user info display', profile.displayName);
             }
         }
         
@@ -473,7 +553,10 @@
         }
         
         function submitForm() {
+            debugLog('Submit form called');
+            
             if (!userProfile) {
+                debugLog('No user profile available');
                 showError('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
                 return;
             }
@@ -491,24 +574,81 @@
                 lineUserId: userProfile.userId,
                 lineDisplayName: userProfile.displayName,
                 userName: userName,
-                passwordChanged: true,
-                system1: document.getElementById('system1').checked,
-                system2: document.getElementById('system2').checked,
-                system3: document.getElementById('system3').checked,
-                system4: document.getElementById('system4').checked,
-                systemsCount: systemCheckboxes.length
+                passwordChanged: 'true',
+                system1: document.getElementById('system1').checked ? 'true' : 'false',
+                system2: document.getElementById('system2').checked ? 'true' : 'false',
+                system3: document.getElementById('system3').checked ? 'true' : 'false',
+                system4: document.getElementById('system4').checked ? 'true' : 'false',
+                systemsCount: systemCheckboxes.length.toString()
             };
             
-            console.log('Sending data:', formData);
+            debugLog('Form data prepared', formData);
             
-            // วิธีที่ 1: ใช้ form submit (หลีกเลี่ยง CORS)
+            // วิธีที่ 1: ใช้ GET request (ทำงานได้ดีใน LINE)
+            const params = new URLSearchParams(formData).toString();
+            const getUrl = GAS_URL + '?' + params;
+            
+            debugLog('Sending GET request to:', getUrl);
+            
+            fetch(getUrl, {
+                method: 'GET',
+                mode: 'no-cors'
+            }).then(response => {
+                debugLog('GET request completed');
+                setTimeout(showSuccess, 2000);
+            }).catch(error => {
+                debugLog('GET request failed, trying POST', error);
+                tryPostMethod(formData);
+            });
+            
+            // วิธีที่ 2: ใช้ Image pixel tracking (สำรอง)
+            setTimeout(() => {
+                const img = new Image();
+                img.onload = () => debugLog('Image tracking success');
+                img.onerror = () => debugLog('Image tracking failed');
+                img.src = getUrl + '&_t=' + Date.now();
+            }, 1000);
+        }
+        
+        function tryPostMethod(formData) {
+            debugLog('Trying POST method');
+            
+            // POST with form-data
+            const form = new FormData();
+            Object.keys(formData).forEach(key => {
+                form.append(key, formData[key]);
+            });
+            
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: form,
+                mode: 'no-cors'
+            }).then(response => {
+                debugLog('POST request completed');
+                setTimeout(showSuccess, 2000);
+            }).catch(error => {
+                debugLog('POST request failed, using iframe fallback', error);
+                useIframeFallback(formData);
+            });
+        }
+        
+        function useIframeFallback(formData) {
+            debugLog('Using iframe fallback');
+            
+            // สร้าง iframe ซ่อน
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'hiddenFrame';
+            document.body.appendChild(iframe);
+            
+            // สร้าง form
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = GAS_URL;
-            form.target = '_blank';
+            form.target = 'hiddenFrame';
             form.style.display = 'none';
             
-            // สร้าง input fields
+            // เพิ่ม input fields
             Object.keys(formData).forEach(key => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
@@ -519,27 +659,29 @@
             
             document.body.appendChild(form);
             form.submit();
-            document.body.removeChild(form);
             
-            // แสดงผลสำเร็จทันที (เพราะไม่สามารถรอ response ได้)
-            setTimeout(() => {
-                loadingSection.style.display = 'none';
-                successSection.style.display = 'block';
-            }, 2000);
+            debugLog('Form submitted via iframe');
             
-            // วิธีที่ 2: ลองใช้ fetch พร้อม fallback (สำรอง)
+            // ทำความสะอาด
             setTimeout(() => {
-                fetch(GAS_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams(formData),
-                    mode: 'no-cors'
-                }).catch(error => {
-                    console.log('Fetch error (expected in no-cors mode):', error);
-                });
-            }, 1000);
+                document.body.removeChild(form);
+                document.body.removeChild(iframe);
+                showSuccess();
+            }, 3000);
+        }
+        
+        function showSuccess() {
+            loadingSection.style.display = 'none';
+            successSection.style.display = 'block';
+            debugLog('Success screen shown');
+            
+            // ปิดหน้าต่าง LIFF หลังจาก 5 วินาที
+            if (liffReady && typeof liff !== 'undefined') {
+                setTimeout(() => {
+                    debugLog('Auto-closing LIFF window');
+                    liff.closeWindow();
+                }, 5000);
+            }
         }
     </script>
 </body>
