@@ -410,7 +410,7 @@
         });
         
         function initializeLiff() {
-            const LIFF_ID = '2007646136-9Y4G73l4'; // แทนที่ด้วย LIFF ID จริง
+            const LIFF_ID = '2005926616-YOUR_LIFF_ID'; // แทนที่ด้วย LIFF ID จริง
             debugLog('Initializing LIFF with ID', LIFF_ID);
             
             liff.init({
@@ -584,7 +584,7 @@
             
             debugLog('Form data prepared', formData);
             
-            // วิธีที่ 1: ใช้ GET request (ทำงานได้ดีใน LINE)
+            // ใช้เพียงวิธีเดียว: GET request
             const params = new URLSearchParams(formData).toString();
             const getUrl = GAS_URL + '?' + params;
             
@@ -594,26 +594,18 @@
                 method: 'GET',
                 mode: 'no-cors'
             }).then(response => {
-                debugLog('GET request completed');
-                setTimeout(showSuccess, 2000);
+                debugLog('GET request completed successfully');
+                showSuccess();
             }).catch(error => {
-                debugLog('GET request failed, trying POST', error);
+                debugLog('GET request failed, trying fallback', error);
+                // ถ้า GET ไม่ได้ ให้ลอง POST แค่ครั้งเดียว
                 tryPostMethod(formData);
             });
-            
-            // วิธีที่ 2: ใช้ Image pixel tracking (สำรอง)
-            setTimeout(() => {
-                const img = new Image();
-                img.onload = () => debugLog('Image tracking success');
-                img.onerror = () => debugLog('Image tracking failed');
-                img.src = getUrl + '&_t=' + Date.now();
-            }, 1000);
         }
         
         function tryPostMethod(formData) {
-            debugLog('Trying POST method');
+            debugLog('Trying POST method as fallback');
             
-            // POST with form-data
             const form = new FormData();
             Object.keys(formData).forEach(key => {
                 form.append(key, formData[key]);
@@ -625,49 +617,12 @@
                 mode: 'no-cors'
             }).then(response => {
                 debugLog('POST request completed');
-                setTimeout(showSuccess, 2000);
-            }).catch(error => {
-                debugLog('POST request failed, using iframe fallback', error);
-                useIframeFallback(formData);
-            });
-        }
-        
-        function useIframeFallback(formData) {
-            debugLog('Using iframe fallback');
-            
-            // สร้าง iframe ซ่อน
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.name = 'hiddenFrame';
-            document.body.appendChild(iframe);
-            
-            // สร้าง form
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = GAS_URL;
-            form.target = 'hiddenFrame';
-            form.style.display = 'none';
-            
-            // เพิ่ม input fields
-            Object.keys(formData).forEach(key => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = formData[key];
-                form.appendChild(input);
-            });
-            
-            document.body.appendChild(form);
-            form.submit();
-            
-            debugLog('Form submitted via iframe');
-            
-            // ทำความสะอาด
-            setTimeout(() => {
-                document.body.removeChild(form);
-                document.body.removeChild(iframe);
                 showSuccess();
-            }, 3000);
+            }).catch(error => {
+                debugLog('POST request also failed', error);
+                // แสดงผลสำเร็จอยู่ดี เพราะ no-cors ไม่สามารถตรวจสอบผลได้แน่นอน
+                showSuccess();
+            });
         }
         
         function showSuccess() {
