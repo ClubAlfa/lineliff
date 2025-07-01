@@ -7,153 +7,204 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3/dist/js.cookie.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * {
             margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            padding: 16px;
             min-height: 100vh;
         }
         
         .container {
-            max-width: 400px;
+            max-width: 420px;
             margin: 0 auto;
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
         
         .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px 24px;
             text-align: center;
-            margin-bottom: 30px;
         }
         
         .header h1 {
-            color: #333;
-            margin: 0;
-            font-size: 24px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
         
         .header p {
-            color: #666;
-            margin: 10px 0 0 0;
             font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .content {
+            padding: 32px 24px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
         }
         
         .form-group input[type="text"] {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 12px;
             font-size: 16px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
+            transition: all 0.2s ease;
+            background: #ffffff;
         }
         
         .form-group input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
         .checkbox-group {
-            margin: 15px 0;
+            margin: 16px 0;
         }
         
         .checkbox-item {
             display: flex;
-            align-items: center;
-            margin: 12px 0;
-            padding: 10px;
-            border-radius: 8px;
-            transition: background-color 0.2s;
+            align-items: flex-start;
+            margin: 16px 0;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1.5px solid #f1f5f9;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
         
         .checkbox-item:hover {
-            background-color: #f8f9ff;
+            border-color: #e2e8f0;
+            background: #f8fafc;
+        }
+        
+        .checkbox-item.checked {
+            border-color: #667eea;
+            background: #f0f4ff;
         }
         
         .checkbox-item input[type="checkbox"] {
             width: 20px;
             height: 20px;
             margin-right: 12px;
+            margin-top: 2px;
             accent-color: #667eea;
+            border-radius: 4px;
         }
         
         .checkbox-item label {
             margin: 0;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 400;
+            font-size: 15px;
+            flex: 1;
         }
         
         .main-checkbox {
-            background-color: #e8f2ff;
-            border: 2px solid #667eea;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            border-color: #667eea;
         }
         
         .system-checkboxes {
-            margin-left: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            margin-top: 16px;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .other-system-input {
+            margin-left: 32px;
+            margin-top: 12px;
+        }
+        
+        .other-system-input input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
         }
         
         .summary {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-left: 4px solid #28a745;
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 16px;
+            margin: 24px 0;
+            border: 1px solid #e5e7eb;
             display: none;
         }
         
         .summary h3 {
-            margin: 0 0 15px 0;
-            color: #333;
+            margin: 0 0 20px 0;
+            color: #1e293b;
+            font-size: 18px;
+            font-weight: 600;
         }
         
         .summary-item {
-            margin: 8px 0;
-            padding: 5px 0;
+            margin: 16px 0;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
         }
         
         .summary-label {
             font-weight: 600;
-            color: #555;
+            color: #374151;
+            font-size: 14px;
         }
         
         .summary-value {
-            color: #333;
-            margin-left: 10px;
+            color: #1e293b;
+            margin-top: 4px;
+            font-size: 15px;
         }
         
         .btn-group {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 32px;
         }
         
         .btn {
             flex: 1;
-            padding: 15px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s ease;
+            font-family: inherit;
         }
         
         .btn-primary {
@@ -162,50 +213,50 @@
         }
         
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
         
         .btn-primary:disabled {
-            background: #ccc;
+            background: #9ca3af;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
         
         .btn-secondary {
-            background: #6c757d;
-            color: white;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
         }
         
         .btn-secondary:hover {
-            background: #5a6268;
+            background: #e2e8f0;
         }
         
         .btn-success {
-            background: #28a745;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
         }
         
         .btn-success:hover {
-            background: #218838;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
         }
         
         .loading {
             text-align: center;
-            padding: 20px;
+            padding: 48px 24px;
         }
         
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
             width: 40px;
             height: 40px;
+            border: 3px solid #f1f5f9;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            margin: 0 auto 20px;
         }
         
         @keyframes spin {
@@ -213,23 +264,122 @@
             100% { transform: rotate(360deg); }
         }
         
+        .loading p {
+            color: #64748b;
+            font-size: 15px;
+        }
+        
         .success-message {
             text-align: center;
-            padding: 30px;
+            padding: 48px 24px;
             display: none;
         }
         
         .success-icon {
-            font-size: 60px;
-            color: #28a745;
-            margin-bottom: 20px;
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .success-message h2 {
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .success-message p {
+            color: #64748b;
+            margin-bottom: 24px;
+            font-size: 15px;
         }
         
         .error-message {
-            color: #dc3545;
+            color: #dc2626;
             font-size: 14px;
-            margin-top: 10px;
+            margin-top: 8px;
+            padding: 12px 16px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
             display: none;
+        }
+        
+        .test-mode-warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .debug-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            background: #1e293b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transition: all 0.2s ease;
+        }
+        
+        .debug-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .debug-info {
+            position: fixed;
+            bottom: 80px;
+            left: 16px;
+            right: 16px;
+            background: rgba(30, 41, 59, 0.95);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+        
+        .debug-info div {
+            margin: 4px 0;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .debug-info div:last-child {
+            border-bottom: none;
+        }
+        
+        /* Smooth animations */
+        .container > div {
+            transition: all 0.3s ease;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            body {
+                padding: 0;
+            }
         }
     </style>
 </head>
@@ -242,41 +392,97 @@
                 <p>กรุณากรอกข้อมูลเพื่อยืนยันการดำเนินการ</p>
             </div>
             
-            <form id="passwordForm">
-                <div class="form-group">
-                    <label for="userName">ชื่อ-นามสกุล *</label>
-                    <input type="text" id="userName" required placeholder="กรุณากรอกชื่อ-นามสกุล">
-                </div>
-                
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <div class="checkbox-item main-checkbox">
-                            <input type="checkbox" id="passwordChanged" required>
-                            <label for="passwordChanged">✅ ได้ดำเนินการเปลี่ยน Password แล้ว</label>
+            <div class="content">
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label for="userName">ชื่อ-นามสกุล *</label>
+                        <input type="text" id="userName" required placeholder="กรุณากรอกชื่อ-นามสกุล">
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <div class="checkbox-item main-checkbox">
+                                <input type="checkbox" id="passwordChanged" required>
+                                <label for="passwordChanged">✅ ได้ดำเนินการเปลี่ยน Password แล้ว</label>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>ระบบที่ดำเนินการเปลี่ยน Password:</label>
-                    <div class="system-checkboxes">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="system1" name="systems">
-                            <label for="system1">🖥️ ระบบที่ 1 - Windows Domain</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="system2" name="systems">
-                            <label for="system2">📧 ระบบที่ 2 - Email System</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="system3" name="systems">
-                            <label for="system3">📊 ระบบที่ 3 - ERP System</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="system4" name="systems">
-                            <label for="system4">☁️ ระบบที่ 4 - Cloud Services</label>
+                    
+                    <div class="form-group">
+                        <label>ระบบที่ดำเนินการเปลี่ยน Password:</label>
+                        <div class="system-checkboxes">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system1" name="systems">
+                                <label for="system1">🖥️ ระบบที่ 1 - Windows Domain</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system2" name="systems">
+                                <label for="system2">📧 ระบบที่ 2 - Email System</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system3" name="systems">
+                                <label for="system3">📊 ระบบที่ 3 - ERP System</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system4" name="systems">
+                                <label for="system4">☁️ ระบบที่ 4 - Cloud Services</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="systemOther" name="systems">
+                                <label for="systemOther">🔧 ระบบอื่นๆ (กรุณาระบุ)</label>
+                            </div>
+                            <div class="other-system-input" id="otherSystemInput" style="display: none;">
+                                <input type="text" id="otherSystemName" placeholder="กรุณาระบุชื่อระบบอื่นๆ...">
+                            </div>
                         </div>
                     </div>
+                    
+                    <div class="error-message" id="errorMessage"></div>
+                    
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" id="previewBtn">👁️ ดูข้อมูลสรุป</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Summary Section -->
+        <div id="summarySection" class="summary">
+            <h3>📋 สรุปข้อมูลที่กรอก</h3>
+            <div class="summary-item">
+                <span class="summary-label">ชื่อ:</span>
+                <div class="summary-value" id="summaryName"></div>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">สถานะ:</span>
+                <div class="summary-value" id="summaryStatus"></div>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">ระบบที่เปลี่ยน Password:</span>
+                <div class="summary-value" id="summarySystems"></div>
+            </div>
+            
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" id="backBtn">⬅️ กลับไปแก้ไข</button>
+                <button type="button" class="btn btn-success" id="submitBtn">✅ ยืนยันและส่งข้อมูล</button>
+            </div>
+        </div>
+        
+        <!-- Loading Section -->
+        <div id="loadingSection" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>กำลังบันทึกข้อมูล...</p>
+        </div>
+        
+        <!-- Success Section -->
+        <div id="successSection" class="success-message">
+            <div class="success-icon">✅</div>
+            <h2>บันทึกข้อมูลสำเร็จ!</h2>
+            <p>ขอบคุณที่ยืนยันการเปลี่ยน Password</p>
+            <button type="button" class="btn btn-primary" onclick="liff.closeWindow()">ปิดหน้าต่าง</button>
+        </div>
+    </div>ิ่มเติม (ถ้ามี):</label>
+                    <textarea id="notes" placeholder="ระบุปัญหาที่พบ, ข้อเสนอแนะ, หรือข้อมูลเพิ่มเติม..." style="width: 100%; height: 80px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical; box-sizing: border-box;"></textarea>
                 </div>
                 
                 <div class="error-message" id="errorMessage"></div>
@@ -410,7 +616,7 @@
         });
         
         function initializeLiff() {
-            const LIFF_ID = '2007646136-9Y4G73l4'; // แทนที่ด้วย LIFF ID จริง
+            const LIFF_ID = '2005926616-YOUR_LIFF_ID'; // แทนที่ด้วย LIFF ID จริง
             debugLog('Initializing LIFF with ID', LIFF_ID);
             
             liff.init({
@@ -491,6 +697,23 @@
         backBtn.addEventListener('click', showForm);
         submitBtn.addEventListener('click', submitForm);
         
+        // Event listeners สำหรับ checkbox แบบกำหนดเอง
+        document.getElementById('systemOther').addEventListener('change', function() {
+            const otherInput = document.getElementById('otherSystemInput');
+            otherInput.style.display = this.checked ? 'block' : 'none';
+            if (!this.checked) {
+                document.getElementById('otherSystemName').value = '';
+            }
+        });
+        
+        document.getElementById('actionCustom').addEventListener('change', function() {
+            const customInput = document.getElementById('customActionInput');
+            customInput.style.display = this.checked ? 'block' : 'none';
+            if (!this.checked) {
+                document.getElementById('customActionText').value = '';
+            }
+        });
+        
         function showError(message) {
             errorMessage.textContent = message;
             errorMessage.style.display = 'block';
@@ -504,6 +727,7 @@
             const userName = document.getElementById('userName').value.trim();
             const passwordChanged = document.getElementById('passwordChanged').checked;
             const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
+            const difficulty = document.getElementById('difficulty').value;
             
             if (!userName) {
                 showError('กรุณากรอกชื่อ-นามสกุล');
@@ -520,6 +744,27 @@
                 return false;
             }
             
+            // ตรวจสอบว่าเลือก "ระบบอื่นๆ" แต่ไม่ได้กรอกชื่อระบบ
+            const systemOther = document.getElementById('systemOther').checked;
+            const otherSystemName = document.getElementById('otherSystemName').value.trim();
+            if (systemOther && !otherSystemName) {
+                showError('กรุณาระบุชื่อระบบอื่นๆ');
+                return false;
+            }
+            
+            // ตรวจสอบว่าเลือก "การดำเนินการอื่นๆ" แต่ไม่ได้กรอกรายละเอียด
+            const actionCustom = document.getElementById('actionCustom').checked;
+            const customActionText = document.getElementById('customActionText').value.trim();
+            if (actionCustom && !customActionText) {
+                showError('กรุณาระบุการดำเนินการเพิ่มเติม');
+                return false;
+            }
+            
+            if (!difficulty) {
+                showError('กรุณาเลือกระดับความยากในการเปลี่ยน Password');
+                return false;
+            }
+            
             hideError();
             return true;
         }
@@ -532,15 +777,71 @@
             // Get form data
             const userName = document.getElementById('userName').value.trim();
             const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
+            const actionCheckboxes = document.querySelectorAll('input[name="actions"]:checked');
+            const difficulty = document.getElementById('difficulty').value;
+            const notes = document.getElementById('notes').value.trim();
             
             // Update summary
             document.getElementById('summaryName').textContent = userName;
             document.getElementById('summaryStatus').textContent = '✅ ได้ดำเนินการเปลี่ยน Password แล้ว';
             
-            const systemsHtml = Array.from(systemCheckboxes).map(checkbox => {
-                return '<div style="margin: 5px 0;">• ' + checkbox.nextElementSibling.textContent + '</div>';
-            }).join('');
+            // สรุประบบที่เปลี่ยน
+            let systemsHtml = '';
+            systemCheckboxes.forEach(checkbox => {
+                let systemName = checkbox.nextElementSibling.textContent;
+                
+                // ถ้าเป็นระบบอื่นๆ ให้แสดงชื่อที่กรอกเพิ่ม
+                if (checkbox.id === 'systemOther') {
+                    const otherName = document.getElementById('otherSystemName').value.trim();
+                    systemName = `🔧 ระบบอื่นๆ: ${otherName}`;
+                }
+                
+                systemsHtml += `<div style="margin: 5px 0;">• ${systemName}</div>`;
+            });
             document.getElementById('summarySystems').innerHTML = systemsHtml;
+            
+            // สรุปการดำเนินการเพิ่มเติม
+            let actionsHtml = '';
+            actionCheckboxes.forEach(checkbox => {
+                let actionName = checkbox.nextElementSibling.textContent;
+                
+                // ถ้าเป็นการดำเนินการอื่นๆ ให้แสดงข้อความที่กรอกเพิ่ม
+                if (checkbox.id === 'actionCustom') {
+                    const customText = document.getElementById('customActionText').value.trim();
+                    actionName = `✏️ การดำเนินการอื่นๆ: ${customText}`;
+                }
+                
+                actionsHtml += `<div style="margin: 5px 0;">• ${actionName}</div>`;
+            });
+            
+            // เพิ่มข้อมูลใหม่ในสรุป
+            let summaryDetailsHtml = `
+                <div class="summary-item">
+                    <span class="summary-label">ระดับความยาก:</span>
+                    <span class="summary-value">${document.querySelector('#difficulty option:checked').textContent}</span>
+                </div>
+            `;
+            
+            if (actionsHtml) {
+                summaryDetailsHtml += `
+                    <div class="summary-item">
+                        <span class="summary-label">การดำเนินการเพิ่มเติม:</span>
+                        <div class="summary-value">${actionsHtml}</div>
+                    </div>
+                `;
+            }
+            
+            if (notes) {
+                summaryDetailsHtml += `
+                    <div class="summary-item">
+                        <span class="summary-label">หมายเหตุ:</span>
+                        <span class="summary-value">${notes}</span>
+                    </div>
+                `;
+            }
+            
+            // เพิ่มข้อมูลเพิ่มเติมในสรุป
+            document.getElementById('summarySystems').insertAdjacentHTML('afterend', summaryDetailsHtml);
             
             // Show summary section
             formSection.style.display = 'none';
@@ -568,6 +869,11 @@
             // Prepare data
             const userName = document.getElementById('userName').value.trim();
             const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
+            const actionCheckboxes = document.querySelectorAll('input[name="actions"]:checked');
+            const difficulty = document.getElementById('difficulty').value;
+            const notes = document.getElementById('notes').value.trim();
+            const otherSystemName = document.getElementById('otherSystemName').value.trim();
+            const customActionText = document.getElementById('customActionText').value.trim();
             
             const formData = {
                 timestamp: new Date().toLocaleString('th-TH', {timeZone: 'Asia/Bangkok'}),
@@ -579,7 +885,21 @@
                 system2: document.getElementById('system2').checked ? 'true' : 'false',
                 system3: document.getElementById('system3').checked ? 'true' : 'false',
                 system4: document.getElementById('system4').checked ? 'true' : 'false',
-                systemsCount: systemCheckboxes.length.toString()
+                system5: document.getElementById('system5').checked ? 'true' : 'false',
+                system6: document.getElementById('system6').checked ? 'true' : 'false',
+                system7: document.getElementById('system7').checked ? 'true' : 'false',
+                systemOther: document.getElementById('systemOther').checked ? 'true' : 'false',
+                otherSystemName: otherSystemName,
+                actionBackup: document.getElementById('actionBackup').checked ? 'true' : 'false',
+                actionLogout: document.getElementById('actionLogout').checked ? 'true' : 'false',
+                action2FA: document.getElementById('action2FA').checked ? 'true' : 'false',
+                actionUpdate: document.getElementById('actionUpdate').checked ? 'true' : 'false',
+                actionCustom: document.getElementById('actionCustom').checked ? 'true' : 'false',
+                customActionText: customActionText,
+                difficulty: difficulty,
+                notes: notes,
+                systemsCount: systemCheckboxes.length.toString(),
+                actionsCount: actionCheckboxes.length.toString()
             };
             
             debugLog('Form data prepared', formData);
