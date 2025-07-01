@@ -428,6 +428,46 @@
                                 <label for="system4">☁️ ระบบ Cloud/Google Workspace</label>
                             </div>
                             <div class="checkbox-item">
+                                <input type="checkbox" id="system5" name="systems">
+                                <label for="system5">🏦 ระบบ Banking/Finance</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system6" name="systems">
+                                <label for="system6">🛡️ ระบบ VPN/Security</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system7" name="systems">
+                                <label for="system7">💬 ระบบ Communication (Teams/Slack)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system8" name="systems">
+                                <label for="system8">📱 ระบบ Mobile/App</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system9" name="systems">
+                                <label for="system9">🌐 ระบบ Web Portal</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system10" name="systems">
+                                <label for="system10">💾 ระบบ Database</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system11" name="systems">
+                                <label for="system11">🔧 ระบบ IT Management</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system12" name="systems">
+                                <label for="system12">📋 ระบบ HR/Payroll</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system13" name="systems">
+                                <label for="system13">📦 ระบบ Inventory/WMS</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="system14" name="systems">
+                                <label for="system14">🚗 ระบบ Fleet/Transport</label>
+                            </div>
+                            <div class="checkbox-item">
                                 <input type="checkbox" id="systemOther" name="systems">
                                 <label for="systemOther">🔧 ระบบอื่นๆ (กรุณาระบุ)</label>
                             </div>
@@ -481,53 +521,6 @@
             <p>ขอบคุณที่ยืนยันการเปลี่ยน Password</p>
             <button type="button" class="btn btn-primary" onclick="liff.closeWindow()">ปิดหน้าต่าง</button>
         </div>
-    </div>ิ่มเติม (ถ้ามี):</label>
-                    <textarea id="notes" placeholder="ระบุปัญหาที่พบ, ข้อเสนอแนะ, หรือข้อมูลเพิ่มเติม..." style="width: 100%; height: 80px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical; box-sizing: border-box;"></textarea>
-                </div>
-                
-                <div class="error-message" id="errorMessage"></div>
-                
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" id="previewBtn">👁️ ดูข้อมูลสรุป</button>
-                </div>
-            </form>
-        </div>
-        
-        <!-- Summary Section -->
-        <div id="summarySection" class="summary">
-            <h3>📋 สรุปข้อมูลที่กรอก</h3>
-            <div class="summary-item">
-                <span class="summary-label">ชื่อ:</span>
-                <span class="summary-value" id="summaryName"></span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">สถานะ:</span>
-                <span class="summary-value" id="summaryStatus"></span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">ระบบที่เปลี่ยน Password:</span>
-                <div class="summary-value" id="summarySystems"></div>
-            </div>
-            
-            <div class="btn-group">
-                <button type="button" class="btn btn-secondary" id="backBtn">⬅️ กลับไปแก้ไข</button>
-                <button type="button" class="btn btn-success" id="submitBtn">✅ ยืนยันและส่งข้อมูล</button>
-            </div>
-        </div>
-        
-        <!-- Loading Section -->
-        <div id="loadingSection" class="loading" style="display: none;">
-            <div class="spinner"></div>
-            <p>กำลังบันทึกข้อมูล...</p>
-        </div>
-        
-        <!-- Success Section -->
-        <div id="successSection" class="success-message">
-            <div class="success-icon">✅</div>
-            <h2>บันทึกข้อมูลสำเร็จ!</h2>
-            <p>ขอบคุณที่ยืนยันการเปลี่ยน Password</p>
-            <button type="button" class="btn btn-primary" onclick="liff.closeWindow()">ปิดหน้าต่าง</button>
-        </div>
     </div>
 
     <script>
@@ -537,6 +530,16 @@
             system2: '📧 ระบบ Email',  
             system3: '📊 ระบบ ERP/SAP',
             system4: '☁️ ระบบ Cloud/Google Workspace',
+            system5: '🏦 ระบบ Banking/Finance',
+            system6: '🛡️ ระบบ VPN/Security',
+            system7: '💬 ระบบ Communication (Teams/Slack)',
+            system8: '📱 ระบบ Mobile/App',
+            system9: '🌐 ระบบ Web Portal',
+            system10: '💾 ระบบ Database',
+            system11: '🔧 ระบบ IT Management',
+            system12: '📋 ระบบ HR/Payroll',
+            system13: '📦 ระบบ Inventory/WMS',
+            system14: '🚗 ระบบ Fleet/Transport',
             systemOther: '🔧 ระบบอื่นๆ'
         };
         
@@ -562,22 +565,13 @@
         function createDebugDiv() {
             const div = document.createElement('div');
             div.id = 'debugInfo';
-            div.style.cssText = `
-                position: fixed; bottom: 0; left: 0; right: 0; 
-                background: rgba(0,0,0,0.8); color: white; 
-                padding: 10px; font-size: 12px; max-height: 200px; 
-                overflow-y: auto; z-index: 9999; display: none;
-            `;
+            div.className = 'debug-info';
             document.body.appendChild(div);
             
             // เพิ่มปุ่มสำหรับแสดง/ซ่อน debug
             const toggleBtn = document.createElement('button');
             toggleBtn.textContent = '🐛';
-            toggleBtn.style.cssText = `
-                position: fixed; bottom: 210px; right: 10px; 
-                z-index: 10000; padding: 5px 10px; border: none; 
-                background: #333; color: white; border-radius: 50%;
-            `;
+            toggleBtn.className = 'debug-toggle';
             toggleBtn.onclick = () => {
                 div.style.display = div.style.display === 'none' ? 'block' : 'none';
             };
@@ -677,18 +671,9 @@
         
         function showTestModeWarning() {
             const warning = document.createElement('div');
-            warning.style.cssText = `
-                background: #fff3cd;
-                border: 1px solid #ffeaa7;
-                color: #856404;
-                padding: 10px;
-                border-radius: 5px;
-                margin-bottom: 20px;
-                text-align: center;
-                font-size: 14px;
-            `;
+            warning.className = 'test-mode-warning';
             warning.innerHTML = '⚠️ <strong>โหมดทดสอบ:</strong> กรุณาเปิดใน LINE เพื่อใช้งานจริง';
-            document.querySelector('.container').insertBefore(warning, document.querySelector('.header'));
+            document.querySelector('.content').insertBefore(warning, document.querySelector('#passwordForm'));
         }
         
         // Form elements
@@ -768,18 +753,46 @@
             return true;
         }
         
+        function showSummary() {
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Get form data
+            const userName = document.getElementById('userName').value.trim();
+            const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
+            
+            // Update summary
+            document.getElementById('summaryName').textContent = userName;
+            document.getElementById('summaryStatus').textContent = '✅ ได้ดำเนินการเปลี่ยน Password แล้ว';
+            
+            // สรุประบบที่เปลี่ยน
+            let systemsHtml = '';
+            systemCheckboxes.forEach(checkbox => {
+                let systemName = checkbox.nextElementSibling.textContent;
+                
+                // ถ้าเป็นระบบอื่นๆ ให้แสดงชื่อที่กรอกเพิ่ม
+                if (checkbox.id === 'systemOther') {
+                    const otherName = document.getElementById('otherSystemName').value.trim();
+                    systemName = `🔧 ระบบอื่นๆ: ${otherName}`;
+                }
+                
+                systemsHtml += `<div style="margin: 8px 0; padding: 8px 12px; background: white; border-radius: 8px; border-left: 3px solid #667eea;">• ${systemName}</div>`;
+            });
+            document.getElementById('summarySystems').innerHTML = systemsHtml;
+            
+            // Show summary section
+            formSection.style.display = 'none';
+            summarySection.style.display = 'block';
+        }
+        
         function showForm() {
+            summarySection.style.display = 'none';
             formSection.style.display = 'block';
-            loadingSection.style.display = 'none';
-            successSection.style.display = 'none';
         }
         
         function submitForm() {
             debugLog('Submit form called');
-            
-            if (!validateForm()) {
-                return;
-            }
             
             if (!userProfile) {
                 debugLog('No user profile available');
@@ -788,7 +801,7 @@
             }
             
             // Show loading
-            formSection.style.display = 'none';
+            summarySection.style.display = 'none';
             loadingSection.style.display = 'block';
             
             // Prepare data
@@ -806,6 +819,16 @@
                 system2: document.getElementById('system2').checked ? 'true' : 'false',
                 system3: document.getElementById('system3').checked ? 'true' : 'false',
                 system4: document.getElementById('system4').checked ? 'true' : 'false',
+                system5: document.getElementById('system5').checked ? 'true' : 'false',
+                system6: document.getElementById('system6').checked ? 'true' : 'false',
+                system7: document.getElementById('system7').checked ? 'true' : 'false',
+                system8: document.getElementById('system8').checked ? 'true' : 'false',
+                system9: document.getElementById('system9').checked ? 'true' : 'false',
+                system10: document.getElementById('system10').checked ? 'true' : 'false',
+                system11: document.getElementById('system11').checked ? 'true' : 'false',
+                system12: document.getElementById('system12').checked ? 'true' : 'false',
+                system13: document.getElementById('system13').checked ? 'true' : 'false',
+                system14: document.getElementById('system14').checked ? 'true' : 'false',
                 systemOther: document.getElementById('systemOther').checked ? 'true' : 'false',
                 otherSystemName: otherSystemName,
                 systemsCount: systemCheckboxes.length.toString()
