@@ -616,7 +616,7 @@
         });
         
         function initializeLiff() {
-            const LIFF_ID = '2005926616-YOUR_LIFF_ID'; // แทนที่ด้วย LIFF ID จริง
+            const LIFF_ID = '2007646136-9Y4G73l4'; // แทนที่ด้วย LIFF ID จริง
             debugLog('Initializing LIFF with ID', LIFF_ID);
             
             liff.init({
@@ -700,18 +700,22 @@
         // Event listeners สำหรับ checkbox แบบกำหนดเอง
         document.getElementById('systemOther').addEventListener('change', function() {
             const otherInput = document.getElementById('otherSystemInput');
+            const checkboxItem = this.closest('.checkbox-item');
+            
             otherInput.style.display = this.checked ? 'block' : 'none';
+            checkboxItem.classList.toggle('checked', this.checked);
+            
             if (!this.checked) {
                 document.getElementById('otherSystemName').value = '';
             }
         });
         
-        document.getElementById('actionCustom').addEventListener('change', function() {
-            const customInput = document.getElementById('customActionInput');
-            customInput.style.display = this.checked ? 'block' : 'none';
-            if (!this.checked) {
-                document.getElementById('customActionText').value = '';
-            }
+        // เพิ่ม visual feedback สำหรับ checkbox
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkboxItem = this.closest('.checkbox-item');
+                checkboxItem.classList.toggle('checked', this.checked);
+            });
         });
         
         function showError(message) {
@@ -727,7 +731,6 @@
             const userName = document.getElementById('userName').value.trim();
             const passwordChanged = document.getElementById('passwordChanged').checked;
             const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
-            const difficulty = document.getElementById('difficulty').value;
             
             if (!userName) {
                 showError('กรุณากรอกชื่อ-นามสกุล');
@@ -752,19 +755,6 @@
                 return false;
             }
             
-            // ตรวจสอบว่าเลือก "การดำเนินการอื่นๆ" แต่ไม่ได้กรอกรายละเอียด
-            const actionCustom = document.getElementById('actionCustom').checked;
-            const customActionText = document.getElementById('customActionText').value.trim();
-            if (actionCustom && !customActionText) {
-                showError('กรุณาระบุการดำเนินการเพิ่มเติม');
-                return false;
-            }
-            
-            if (!difficulty) {
-                showError('กรุณาเลือกระดับความยากในการเปลี่ยน Password');
-                return false;
-            }
-            
             hideError();
             return true;
         }
@@ -777,9 +767,6 @@
             // Get form data
             const userName = document.getElementById('userName').value.trim();
             const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
-            const actionCheckboxes = document.querySelectorAll('input[name="actions"]:checked');
-            const difficulty = document.getElementById('difficulty').value;
-            const notes = document.getElementById('notes').value.trim();
             
             // Update summary
             document.getElementById('summaryName').textContent = userName;
@@ -796,52 +783,9 @@
                     systemName = `🔧 ระบบอื่นๆ: ${otherName}`;
                 }
                 
-                systemsHtml += `<div style="margin: 5px 0;">• ${systemName}</div>`;
+                systemsHtml += `<div style="margin: 8px 0; padding: 8px 12px; background: white; border-radius: 8px; border-left: 3px solid #667eea;">• ${systemName}</div>`;
             });
             document.getElementById('summarySystems').innerHTML = systemsHtml;
-            
-            // สรุปการดำเนินการเพิ่มเติม
-            let actionsHtml = '';
-            actionCheckboxes.forEach(checkbox => {
-                let actionName = checkbox.nextElementSibling.textContent;
-                
-                // ถ้าเป็นการดำเนินการอื่นๆ ให้แสดงข้อความที่กรอกเพิ่ม
-                if (checkbox.id === 'actionCustom') {
-                    const customText = document.getElementById('customActionText').value.trim();
-                    actionName = `✏️ การดำเนินการอื่นๆ: ${customText}`;
-                }
-                
-                actionsHtml += `<div style="margin: 5px 0;">• ${actionName}</div>`;
-            });
-            
-            // เพิ่มข้อมูลใหม่ในสรุป
-            let summaryDetailsHtml = `
-                <div class="summary-item">
-                    <span class="summary-label">ระดับความยาก:</span>
-                    <span class="summary-value">${document.querySelector('#difficulty option:checked').textContent}</span>
-                </div>
-            `;
-            
-            if (actionsHtml) {
-                summaryDetailsHtml += `
-                    <div class="summary-item">
-                        <span class="summary-label">การดำเนินการเพิ่มเติม:</span>
-                        <div class="summary-value">${actionsHtml}</div>
-                    </div>
-                `;
-            }
-            
-            if (notes) {
-                summaryDetailsHtml += `
-                    <div class="summary-item">
-                        <span class="summary-label">หมายเหตุ:</span>
-                        <span class="summary-value">${notes}</span>
-                    </div>
-                `;
-            }
-            
-            // เพิ่มข้อมูลเพิ่มเติมในสรุป
-            document.getElementById('summarySystems').insertAdjacentHTML('afterend', summaryDetailsHtml);
             
             // Show summary section
             formSection.style.display = 'none';
@@ -869,11 +813,7 @@
             // Prepare data
             const userName = document.getElementById('userName').value.trim();
             const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
-            const actionCheckboxes = document.querySelectorAll('input[name="actions"]:checked');
-            const difficulty = document.getElementById('difficulty').value;
-            const notes = document.getElementById('notes').value.trim();
             const otherSystemName = document.getElementById('otherSystemName').value.trim();
-            const customActionText = document.getElementById('customActionText').value.trim();
             
             const formData = {
                 timestamp: new Date().toLocaleString('th-TH', {timeZone: 'Asia/Bangkok'}),
@@ -885,21 +825,9 @@
                 system2: document.getElementById('system2').checked ? 'true' : 'false',
                 system3: document.getElementById('system3').checked ? 'true' : 'false',
                 system4: document.getElementById('system4').checked ? 'true' : 'false',
-                system5: document.getElementById('system5').checked ? 'true' : 'false',
-                system6: document.getElementById('system6').checked ? 'true' : 'false',
-                system7: document.getElementById('system7').checked ? 'true' : 'false',
                 systemOther: document.getElementById('systemOther').checked ? 'true' : 'false',
                 otherSystemName: otherSystemName,
-                actionBackup: document.getElementById('actionBackup').checked ? 'true' : 'false',
-                actionLogout: document.getElementById('actionLogout').checked ? 'true' : 'false',
-                action2FA: document.getElementById('action2FA').checked ? 'true' : 'false',
-                actionUpdate: document.getElementById('actionUpdate').checked ? 'true' : 'false',
-                actionCustom: document.getElementById('actionCustom').checked ? 'true' : 'false',
-                customActionText: customActionText,
-                difficulty: difficulty,
-                notes: notes,
-                systemsCount: systemCheckboxes.length.toString(),
-                actionsCount: actionCheckboxes.length.toString()
+                systemsCount: systemCheckboxes.length.toString()
             };
             
             debugLog('Form data prepared', formData);
