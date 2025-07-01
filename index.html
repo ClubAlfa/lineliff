@@ -413,19 +413,19 @@
                         <div class="system-checkboxes">
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system1" name="systems">
-                                <label for="system1">🖥️ ระบบที่ 1 - Windows Domain</label>
+                                <label for="system1">🖥️ ระบบ Windows/Domain</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system2" name="systems">
-                                <label for="system2">📧 ระบบที่ 2 - Email System</label>
+                                <label for="system2">📧 ระบบ Email</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system3" name="systems">
-                                <label for="system3">📊 ระบบที่ 3 - ERP System</label>
+                                <label for="system3">📊 ระบบ ERP/SAP</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system4" name="systems">
-                                <label for="system4">☁️ ระบบที่ 4 - Cloud Services</label>
+                                <label for="system4">☁️ ระบบ Cloud/Google Workspace</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="systemOther" name="systems">
@@ -531,6 +531,15 @@
     </div>
 
     <script>
+        // ตั้งค่าชื่อระบบที่นี่ - แก้ได้ที่จุดเดียว
+        const SYSTEM_NAMES = {
+            system1: '🖥️ ระบบ Windows/Domain',
+            system2: '📧 ระบบ Email',  
+            system3: '📊 ระบบ ERP/SAP',
+            system4: '☁️ ระบบ Cloud/Google Workspace',
+            systemOther: '🔧 ระบบอื่นๆ'
+        };
+        
         // Google Apps Script URL - ต้องแทนที่ด้วย URL จริง
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbyDd41WufoVzFreCjDGWxshG_EjsOYckZO-zMrcH_DjPKcKYGSa34mV4FDDplqnxVI/exec';
         
@@ -759,46 +768,18 @@
             return true;
         }
         
-        function showSummary() {
-            if (!validateForm()) {
-                return;
-            }
-            
-            // Get form data
-            const userName = document.getElementById('userName').value.trim();
-            const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
-            
-            // Update summary
-            document.getElementById('summaryName').textContent = userName;
-            document.getElementById('summaryStatus').textContent = '✅ ได้ดำเนินการเปลี่ยน Password แล้ว';
-            
-            // สรุประบบที่เปลี่ยน
-            let systemsHtml = '';
-            systemCheckboxes.forEach(checkbox => {
-                let systemName = checkbox.nextElementSibling.textContent;
-                
-                // ถ้าเป็นระบบอื่นๆ ให้แสดงชื่อที่กรอกเพิ่ม
-                if (checkbox.id === 'systemOther') {
-                    const otherName = document.getElementById('otherSystemName').value.trim();
-                    systemName = `🔧 ระบบอื่นๆ: ${otherName}`;
-                }
-                
-                systemsHtml += `<div style="margin: 8px 0; padding: 8px 12px; background: white; border-radius: 8px; border-left: 3px solid #667eea;">• ${systemName}</div>`;
-            });
-            document.getElementById('summarySystems').innerHTML = systemsHtml;
-            
-            // Show summary section
-            formSection.style.display = 'none';
-            summarySection.style.display = 'block';
-        }
-        
         function showForm() {
-            summarySection.style.display = 'none';
             formSection.style.display = 'block';
+            loadingSection.style.display = 'none';
+            successSection.style.display = 'none';
         }
         
         function submitForm() {
             debugLog('Submit form called');
+            
+            if (!validateForm()) {
+                return;
+            }
             
             if (!userProfile) {
                 debugLog('No user profile available');
@@ -807,7 +788,7 @@
             }
             
             // Show loading
-            summarySection.style.display = 'none';
+            formSection.style.display = 'none';
             loadingSection.style.display = 'block';
             
             // Prepare data
