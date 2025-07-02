@@ -804,18 +804,27 @@
             summarySection.style.display = 'none';
             loadingSection.style.display = 'block';
             
-            // Prepare data - ต้องส่งข้อมูลครบทุกช่อง
+            // Prepare data - ตรวจสอบสถานะ checkbox แต่ละตัว
             const userName = document.getElementById('userName').value.trim();
             const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
             const otherSystemName = document.getElementById('otherSystemName').value.trim();
             
-            // สร้างข้อมูลครบทุกช่องแบบเดียวกับ testOtherSystemData()
+            // แสดง debug ข้อมูล checkbox ก่อนส่ง
+            debugLog('=== CHECKBOX DEBUG BEFORE SENDING ===');
+            for (let i = 1; i <= 14; i++) {
+                const checkbox = document.getElementById(`system${i}`);
+                debugLog(`system${i}.checked = ${checkbox.checked}`);
+            }
+            debugLog(`systemOther.checked = ${document.getElementById('systemOther').checked}`);
+            debugLog(`passwordChanged.checked = ${document.getElementById('passwordChanged').checked}`);
+            
+            // สร้างข้อมูลครบทุกช่อง - ส่งเป็น string ตรงๆ
             const formData = {
                 timestamp: new Date().toLocaleString('th-TH', {timeZone: 'Asia/Bangkok'}),
                 lineUserId: userProfile.userId,
                 lineDisplayName: userProfile.displayName,
                 userName: userName,
-                passwordChanged: 'true',
+                passwordChanged: document.getElementById('passwordChanged').checked ? 'true' : 'false',
                 system1: document.getElementById('system1').checked ? 'true' : 'false',
                 system2: document.getElementById('system2').checked ? 'true' : 'false',
                 system3: document.getElementById('system3').checked ? 'true' : 'false',
@@ -831,11 +840,11 @@
                 system13: document.getElementById('system13').checked ? 'true' : 'false',
                 system14: document.getElementById('system14').checked ? 'true' : 'false',
                 systemOther: document.getElementById('systemOther').checked ? 'true' : 'false',
-                otherSystemName: otherSystemName || '',  // ให้ค่าว่างถ้าไม่มี
+                otherSystemName: otherSystemName || '',
                 systemsCount: systemCheckboxes.length.toString()
             };
             
-            debugLog('=== COMPLETE FORM DATA ===');
+            debugLog('=== FORM DATA BEFORE SENDING ===');
             debugLog('All systems data:', {
                 system1: formData.system1,
                 system2: formData.system2,
@@ -858,8 +867,9 @@
             // ใช้ POST method แทน GET เพื่อส่งข้อมูลครบทุกช่อง
             const form = new FormData();
             Object.keys(formData).forEach(key => {
-                form.append(key, formData[key]);
-                debugLog(`Adding to form: ${key} = ${formData[key]}`);
+                const value = String(formData[key]); // บังคับให้เป็น string
+                form.append(key, value);
+                debugLog(`Adding to form: ${key} = ${value} (type: ${typeof value})`);
             });
             
             debugLog('Sending POST request with FormData');
@@ -873,7 +883,7 @@
                 showSuccess();
             }).catch(error => {
                 debugLog('POST request failed', error);
-                // ลอง GET method เป็น fallback (แต่ข้อมูลอาจไม่ครบ)
+                // ลอง GET method เป็น fallback
                 tryGetMethod(formData);
             });
         }
@@ -896,27 +906,6 @@
             }).catch(error => {
                 debugLog('GET request also failed', error);
                 showSuccess(); // แสดงผลสำเร็จอยู่ดี
-            });
-        }
-        
-        function tryPostMethod(formData) {
-            debugLog('Trying POST method as backup');
-            
-            const form = new FormData();
-            Object.keys(formData).forEach(key => {
-                form.append(key, formData[key]);
-            });
-            
-            fetch(GAS_URL, {
-                method: 'POST',
-                body: form,
-                mode: 'no-cors'
-            }).then(response => {
-                debugLog('Backup POST request completed');
-                showSuccess();
-            }).catch(error => {
-                debugLog('Backup POST request also failed', error);
-                showSuccess();
             });
         }
         
