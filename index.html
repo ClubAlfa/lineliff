@@ -544,7 +544,7 @@
         };
         
         // Google Apps Script URL - ต้องแทนที่ด้วย URL จริง
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbx4x59_zBgo6CocfbmKLkyDU-X4FhrmW2rwvmY-MmaJFkhESt8VMgys-2sePt0LeE0/exec';
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycby3W-V0qVDBL5_Ne4RTBx2ZmKGxJN3fKhrgJHLoCSHIgsebeBpMZ36TQjjsdu6h_fG7/exec';
         
         let userProfile = null;
         let isInLineApp = false;
@@ -804,11 +804,12 @@
             summarySection.style.display = 'none';
             loadingSection.style.display = 'block';
             
-            // Prepare data
+            // Prepare data - ต้องส่งข้อมูลครบทุกช่อง
             const userName = document.getElementById('userName').value.trim();
             const systemCheckboxes = document.querySelectorAll('input[name="systems"]:checked');
             const otherSystemName = document.getElementById('otherSystemName').value.trim();
             
+            // สร้างข้อมูลครบทุกช่องแบบเดียวกับ testOtherSystemData()
             const formData = {
                 timestamp: new Date().toLocaleString('th-TH', {timeZone: 'Asia/Bangkok'}),
                 lineUserId: userProfile.userId,
@@ -830,33 +831,76 @@
                 system13: document.getElementById('system13').checked ? 'true' : 'false',
                 system14: document.getElementById('system14').checked ? 'true' : 'false',
                 systemOther: document.getElementById('systemOther').checked ? 'true' : 'false',
-                otherSystemName: otherSystemName,
+                otherSystemName: otherSystemName || '',  // ให้ค่าว่างถ้าไม่มี
                 systemsCount: systemCheckboxes.length.toString()
             };
             
-            debugLog('Form data prepared', formData);
+            debugLog('=== COMPLETE FORM DATA ===');
+            debugLog('All systems data:', {
+                system1: formData.system1,
+                system2: formData.system2,
+                system3: formData.system3,
+                system4: formData.system4,
+                system5: formData.system5,
+                system6: formData.system6,
+                system7: formData.system7,
+                system8: formData.system8,
+                system9: formData.system9,
+                system10: formData.system10,
+                system11: formData.system11,
+                system12: formData.system12,
+                system13: formData.system13,
+                system14: formData.system14,
+                systemOther: formData.systemOther,
+                otherSystemName: formData.otherSystemName
+            });
             
-            // ใช้เพียงวิธีเดียว: GET request
+            // ใช้ POST method แทน GET เพื่อส่งข้อมูลครบทุกช่อง
+            const form = new FormData();
+            Object.keys(formData).forEach(key => {
+                form.append(key, formData[key]);
+                debugLog(`Adding to form: ${key} = ${formData[key]}`);
+            });
+            
+            debugLog('Sending POST request with FormData');
+            
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: form,
+                mode: 'no-cors'
+            }).then(response => {
+                debugLog('POST request completed successfully');
+                showSuccess();
+            }).catch(error => {
+                debugLog('POST request failed', error);
+                // ลอง GET method เป็น fallback (แต่ข้อมูลอาจไม่ครบ)
+                tryGetMethod(formData);
+            });
+        }
+        
+        function tryGetMethod(formData) {
+            debugLog('Trying GET method as fallback');
+            
             const params = new URLSearchParams(formData).toString();
             const getUrl = GAS_URL + '?' + params;
             
-            debugLog('Sending GET request to:', getUrl);
+            debugLog('GET URL length:', getUrl.length);
+            debugLog('GET URL:', getUrl);
             
             fetch(getUrl, {
                 method: 'GET',
                 mode: 'no-cors'
             }).then(response => {
-                debugLog('GET request completed successfully');
+                debugLog('GET request completed');
                 showSuccess();
             }).catch(error => {
-                debugLog('GET request failed, trying fallback', error);
-                // ถ้า GET ไม่ได้ ให้ลอง POST แค่ครั้งเดียว
-                tryPostMethod(formData);
+                debugLog('GET request also failed', error);
+                showSuccess(); // แสดงผลสำเร็จอยู่ดี
             });
         }
         
         function tryPostMethod(formData) {
-            debugLog('Trying POST method as fallback');
+            debugLog('Trying POST method as backup');
             
             const form = new FormData();
             Object.keys(formData).forEach(key => {
@@ -868,11 +912,10 @@
                 body: form,
                 mode: 'no-cors'
             }).then(response => {
-                debugLog('POST request completed');
+                debugLog('Backup POST request completed');
                 showSuccess();
             }).catch(error => {
-                debugLog('POST request also failed', error);
-                // แสดงผลสำเร็จอยู่ดี เพราะ no-cors ไม่สามารถตรวจสอบผลได้แน่นอน
+                debugLog('Backup POST request also failed', error);
                 showSuccess();
             });
         }
