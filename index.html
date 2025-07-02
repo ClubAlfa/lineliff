@@ -349,63 +349,55 @@
                         <div class="system-checkboxes">
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system1" name="systems">
-                                <label for="system1">🖥️ ระบบ Windows/Domain</label>
+                                <label for="system1">📧 Email ศาล</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system2" name="systems">
-                                <label for="system2">📧 ระบบ Email</label>
+                                <label for="system2">🏛️ ระบบสารสนเทศสำนวนคดีศาลชั้นต้น ระยะที่ 1 (โปรแกรมศาลใหม่)</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system3" name="systems">
-                                <label for="system3">📊 ระบบ ERP/SAP</label>
+                                <label for="system3">📂 ระบบงานสารบรรณอิเล็กทรอนิกส์ ระยะที่ 2</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system4" name="systems">
-                                <label for="system4">☁️ ระบบ Cloud/Google Workspace</label>
+                                <label for="system4">👩‍💼 โปรแกรมระบบสารสนเทศทรัพยากรบุคคลระดับกรม (DPIS)</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system5" name="systems">
-                                <label for="system5">🏦 ระบบ Banking/Finance</label>
+                                <label for="system5">📜 รับ - ส่งเอกสาร ศาลฎีกา</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system6" name="systems">
-                                <label for="system6">🛡️ ระบบ VPN/Security</label>
+                                <label for="system6">👨‍💻 ระบบฐานข้อมูลเพื่อเชื่อมโยงและตรวจสอบข้อมูลภายนอก</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system7" name="systems">
-                                <label for="system7">💬 ระบบ Communication (Teams/Slack)</label>
+                                <label for="system7">📲 E-Phonebook</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system8" name="systems">
-                                <label for="system8">📱 ระบบ Mobile/App</label>
+                                <label for="system8">📢 ระบบการส่งเอกสารและการประกาศนัดไต่สวนโดยวิธีการลงโฆษณาทางสื่อเทคโนโลยีสารสนเทศ (E-Notice)</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system9" name="systems">
-                                <label for="system9">🌐 ระบบ Web Portal</label>
+                                <label for="system9">🖨️ ระบบการจัดทำสารบบและสำนวนความอิเล็กทรอนิกส์ (ระบบสแกนสำนวน E-CMS)</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system10" name="systems">
-                                <label for="system10">💾 ระบบ Database</label>
+                                <label for="system10">🌐 ระบบบริการออนไลน์ศาลยุติธรรม - Court Integral Online Service (CIOS)</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system11" name="systems">
-                                <label for="system11">🔧 ระบบ IT Management</label>
+                                <label for="system11">🔗 COJ Single Sign On (SSO)</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="system12" name="systems">
-                                <label for="system12">📋 ระบบ HR/Payroll</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="system13" name="systems">
-                                <label for="system13">📦 ระบบ Inventory/WMS</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="system14" name="systems">
-                                <label for="system14">🚗 ระบบ Fleet/Transport</label>
+                                <label for="system12">📊 ระบบฐานข้อมูลเพื่อเชื่อมโยงและตรวจสอบข้อมูลกับหน่วยงานภายนอก ระยะที่ 2</label>
                             </div>
                             <div class="checkbox-item">
                                 <input type="checkbox" id="systemOther" name="systems">
-                                <label for="systemOther">🔧 ระบบอื่นๆ (กรุณาระบุ)</label>
+                                <label for="systemOther">💻 ระบบอื่นๆ (กรุณาระบุ)</label>
                             </div>
                             <div class="other-system-input" id="otherSystemInput" style="display: none;">
                                 <input type="text" id="otherSystemName" placeholder="กรุณาระบุชื่อระบบอื่นๆ...">
@@ -669,8 +661,6 @@
                 system10: document.getElementById('system10').checked ? 'true' : 'false',
                 system11: document.getElementById('system11').checked ? 'true' : 'false',
                 system12: document.getElementById('system12').checked ? 'true' : 'false',
-                system13: document.getElementById('system13').checked ? 'true' : 'false',
-                system14: document.getElementById('system14').checked ? 'true' : 'false',
                 systemOther: document.getElementById('systemOther').checked ? 'true' : 'false',
                 otherSystemName: otherSystemName || '',
                 systemsCount: systemCheckboxes.length.toString()
